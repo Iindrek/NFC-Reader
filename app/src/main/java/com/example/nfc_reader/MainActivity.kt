@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
         tag?.let {
             val tagId = it.id.joinToString(":") { byte -> "%02X".format(byte) }
-            textView.text = "NFC Tag Leitud:\nID: $tagId"
+            textView.text = "NFC Tag Leitud, kood:\nID: $tagId"
         }
     }
 }
