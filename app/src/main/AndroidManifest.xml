@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.NFC" />
     <uses-feature android:name="android.hardware.nfc" android:required="true" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Seda rida ma enam unustada ei taha -->
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,8 @@
         android:theme="@style/Theme.NFCReader">
         <activity
             android:name="com.example.nfc_reader.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

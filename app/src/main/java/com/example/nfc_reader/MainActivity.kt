@@ -5,9 +5,16 @@ import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,8 +52,35 @@ class MainActivity : AppCompatActivity() {
 
         val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
         tag?.let {
-            val tagId = it.id.joinToString(":") { byte -> "%02X".format(byte) }
+            val tagId = it.id.joinToString("") { byte -> "%02X".format(byte) }
             textView.text = "NFC Tag Leitud, kood:\nID: $tagId"
+            sendTagToSheet(tagId)
+        }
+    }
+}
+
+
+fun sendTagToSheet(tagId: String) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val url = URL("https://script.google.com/macros/s/AKfycbxO7IMdr_9HM0uiE7K_uq9kN9rtO9ioR5G0HbvE1qWnDjmsmxvr4uIJzU-qQ16_m-g/exec")
+            val json = """
+                {
+                    "tagId": "$tagId"
+                }
+            """.trimIndent()
+
+            with(url.openConnection() as HttpURLConnection) {
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json; utf-8")
+                doOutput = true
+                outputStream.write(json.toByteArray(Charsets.UTF_8))
+
+                val response = inputStream.bufferedReader().readText()
+                Log.d("NFCApp", "Sheet Response: $response")
+            }
+        } catch (e: Exception) {
+            Log.e("NFCApp", "Error sending to sheet: ${e.localizedMessage}", e)
         }
     }
 }
