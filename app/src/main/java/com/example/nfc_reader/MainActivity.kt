@@ -82,7 +82,6 @@ class MainActivity : AppCompatActivity() {
 
             textView.text = "NFC Tag Leitud, kood:\nID: $tagId"
 
-            // Send tag info
             sendTagToSheet(tagId, firmName) { success ->
                 runOnUiThread {
                     if (success) {
